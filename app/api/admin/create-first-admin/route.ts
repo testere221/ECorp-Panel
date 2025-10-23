@@ -2,6 +2,51 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Admin from '@/models/Admin';
 
+// GET - Tarayıcıdan direkt erişim için
+export async function GET() {
+  try {
+    await connectDB();
+
+    // İlk admin var mı kontrol et
+    const adminCount = await Admin.countDocuments();
+    
+    if (adminCount > 0) {
+      return NextResponse.json(
+        { 
+          message: 'Admin kullanıcısı zaten mevcut',
+          info: 'Admin paneline giriş yapmak için: /admin/login'
+        },
+        { status: 200 }
+      );
+    }
+
+    // Varsayılan admin oluştur
+    const admin = await Admin.create({
+      email: 'admin@yesstyle.com',
+      password: 'admin123',
+      name: 'E-Corp Admin',
+      role: 'super_admin',
+      isActive: true,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'İlk admin kullanıcısı oluşturuldu',
+      credentials: {
+        email: 'admin@yesstyle.com',
+        password: 'admin123'
+      },
+      info: 'Lütfen admin paneline giriş yapın ve şifrenizi değiştirin: /admin/login'
+    });
+  } catch (error: any) {
+    console.error('Create admin error:', error);
+    return NextResponse.json(
+      { error: 'Sunucu hatası: ' + error.message },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { email, password, name } = await req.json();
