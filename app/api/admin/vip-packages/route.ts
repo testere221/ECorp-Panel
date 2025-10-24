@@ -3,6 +3,10 @@ import dbConnect from '@/lib/mongodb';
 import VipPackage from '@/models/VipPackage';
 import jwt from 'jsonwebtoken';
 
+// Force dynamic - Cache'i kapat
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const JWT_SECRET = process.env.JWT_SECRET || 'yesstyle_super_secret_key_2024';
 
 // Verify admin token
