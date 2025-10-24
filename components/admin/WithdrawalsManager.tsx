@@ -11,6 +11,9 @@ export default function WithdrawalsManager() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   
+  // Search states
+  const [searchQuery, setSearchQuery] = useState('');
+  
   // Use refs to always get latest values in intervals
   const statsRef = useRef<any>(null);
   const soundEnabledRef = useRef(false);
@@ -223,6 +226,24 @@ export default function WithdrawalsManager() {
     }
   };
 
+  // Filter withdrawals based on search query
+  const filteredWithdrawals = withdrawals.filter((withdrawal) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const email = withdrawal.userId?.email?.toLowerCase() || '';
+    const walletAddress = withdrawal.walletAddress?.toLowerCase() || '';
+    const amount = withdrawal.amount?.toString() || '';
+    const currency = withdrawal.currency?.toLowerCase() || '';
+    
+    return (
+      email.includes(query) ||
+      walletAddress.includes(query) ||
+      amount.includes(query) ||
+      currency.includes(query)
+    );
+  });
+
   if (loading) {
     return <div className="text-white text-center py-8">Yükleniyor...</div>;
   }
@@ -285,6 +306,34 @@ export default function WithdrawalsManager() {
         </div>
       </div>
 
+      {/* Search Box */}
+      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="🔍 Email, Cüzdan Adresi, Kripto Adı veya Tutar ile ara..."
+                className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="text-sm text-gray-400">
+            {filteredWithdrawals.length} / {withdrawals.length} sonuç
+          </div>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex space-x-2">
         {['pending', 'completed', 'rejected', 'all'].map((status) => (
@@ -320,14 +369,14 @@ export default function WithdrawalsManager() {
             </tr>
           </thead>
           <tbody>
-            {withdrawals.length === 0 ? (
+            {filteredWithdrawals.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
-                  Çekim talebi bulunamadı
+                  {searchQuery ? '🔍 Arama sonucu bulunamadı' : 'Çekim talebi bulunamadı'}
                 </td>
               </tr>
             ) : (
-              withdrawals.map((withdrawal) => (
+              filteredWithdrawals.map((withdrawal) => (
                 <tr key={withdrawal._id} className="border-b border-slate-700 bg-slate-800 hover:bg-slate-750">
                   <td className="px-4 py-3">
                     <div className="text-white font-medium">{withdrawal.userId?.email || 'Bilinmeyen'}</div>
