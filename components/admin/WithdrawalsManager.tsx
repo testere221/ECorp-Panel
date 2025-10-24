@@ -235,12 +235,14 @@ export default function WithdrawalsManager() {
     const walletAddress = withdrawal.walletAddress?.toLowerCase() || '';
     const amount = withdrawal.amount?.toString() || '';
     const currency = withdrawal.currency?.toLowerCase() || '';
+    const date = new Date(withdrawal.createdAt).toLocaleString('tr-TR').toLowerCase();
     
     return (
       email.includes(query) ||
       walletAddress.includes(query) ||
       amount.includes(query) ||
-      currency.includes(query)
+      currency.includes(query) ||
+      date.includes(query)
     );
   });
 
@@ -315,7 +317,7 @@ export default function WithdrawalsManager() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="🔍 Email, Cüzdan Adresi, Kripto Adı veya Tutar ile ara..."
+                placeholder="🔍 Email, Cüzdan, Kripto, Tutar veya Tarih ile ara (ör: 24.10.2025, 14:30)..."
                 className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
               />
               {searchQuery && (

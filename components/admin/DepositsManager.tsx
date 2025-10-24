@@ -236,12 +236,14 @@ export default function DepositsManager() {
     const txHash = deposit.txHash?.toLowerCase() || '';
     const amount = deposit.amount?.toString() || '';
     const currency = deposit.currency?.toLowerCase() || '';
+    const date = new Date(deposit.createdAt).toLocaleString('tr-TR').toLowerCase();
     
     return (
       email.includes(query) ||
       txHash.includes(query) ||
       amount.includes(query) ||
-      currency.includes(query)
+      currency.includes(query) ||
+      date.includes(query)
     );
   });
 
@@ -316,7 +318,7 @@ export default function DepositsManager() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="🔍 Email, TX Hash, Kripto Adı veya Tutar ile ara..."
+                placeholder="🔍 Email, TX Hash, Kripto, Tutar veya Tarih ile ara (ör: 24.10.2025, 14:30)..."
                 className="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-purple-500 focus:outline-none placeholder-gray-400"
               />
               {searchQuery && (
