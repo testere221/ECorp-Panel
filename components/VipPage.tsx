@@ -45,15 +45,24 @@ export default function VipPage() {
 
     const fetchVipPackages = async () => {
       try {
+        console.log('🔍 VIP Packages: Fetching...');
         const response = await fetch("/api/vip/packages");
+        console.log('📡 VIP Packages Response:', response.status, response.ok);
+        
         if (response.ok) {
           const data = await response.json();
-          setVipPackages(data.packages);
+          console.log('📦 VIP Packages Data:', data);
+          console.log('📦 Packages array:', data.packages);
+          console.log('📦 Packages length:', data.packages?.length);
+          setVipPackages(data.packages || []);
+        } else {
+          console.error('❌ Response not OK:', response.status);
         }
       } catch (error) {
-        console.error("VIP packages fetch error:", error);
+        console.error("❌ VIP packages fetch error:", error);
       } finally {
         setPackagesLoading(false);
+        console.log('✅ Loading complete');
       }
     };
 
